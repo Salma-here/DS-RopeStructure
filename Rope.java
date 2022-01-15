@@ -4,71 +4,91 @@ public class Rope {
     private Node root;
     private static int count;
 
-    public Rope(String str){ // 'new'
+    public Rope(String str) { // 'new'
         String[] words = str.split(" ");
-        for(int i = 0; i < words.length - 1; i++){
+        for (int i = 0; i < words.length - 1; i++) {
             words[i] += " ";
         }
         createRope(words, 0, words.length - 1, null, ' ');
         count++;
     }
 
-    private void createRope(String[] words, int first, int last, Node par, char childType){
-        if(first < last){
+    private void createRope(String[] words, int first, int last, Node par, char childType) {
+        if (first < last) {
             Node p = new Node();
-            if(par == null){
+            if (par == null) {
                 root = p;
-            }
-            else{
-                if(childType == 'l'){
+            } else {
+                if (childType == 'l') {
                     par.setLeft(p);
-                }
-                else{
+                } else {
                     par.setRight(p);
                 }
             }
             int count = last - first + 1;
-            int leftCount = count - count/2;
+            int leftCount = count - count / 2;
             int len = 0;
-            for(int i = first; i < first + leftCount; i++){
+            for (int i = first; i < first + leftCount; i++) {
                 len += words[i].length();
             }
             p.setLen(len);
             createRope(words, first, (first + leftCount - 1), p, 'l');
             createRope(words, (first + leftCount), last, p, 'r');
-        }
-        else{ //first == last
+        } else { //first == last
             Leaf p = new Leaf(words[first]); //or words[last] doesn't matter
-            if(childType == 'l'){
+            if (childType == 'l') {
                 par.setLeft(p);
-            }
-            else{
+            } else {
                 par.setRight(p);
             }
         }
     }
 
-    public void show(){ // 'status' //inorder traversal
+    public void show() { // 'status' //inorder traversal
         Node p = root;
         Stack<Node> s = new Stack<Node>();
         System.out.print(count + ". ");
-        do{
-            while(p != null){
+        do {
+            while (p != null) {
                 s.push(p);
                 p = p.getLeft();
             }
-            if(!s.isEmpty()){
+            if (!s.isEmpty()) {
                 p = s.pop();
                 //code for showing string
-                if(p instanceof Leaf){
+                if (p instanceof Leaf) {
                     Leaf tmp = (Leaf) p;
                     System.out.print(tmp.getData());
                 }
                 //end code for showing string
                 p = p.getRight();
             }
-        } while(!s.isEmpty() || p != null);
+        } while (!s.isEmpty() || p != null);
         System.out.println();
     }
+
+
+    public char indexAt(Node node, int index) {
+        if (node.getLen() < index && node.getRight() != null)
+            return indexAt(node.getRight(), index - node.getLen());
+        if (node.getLeft() != null)
+            return indexAt(node.getLeft(), index);
+        if (node instanceof Leaf) {
+            Leaf leaf = (Leaf) node;
+            return leaf.getData().charAt(index);
+        }
+        return ' ';//TODO
+    }
+
+    public void concat(Rope rope) {
+        Node newRoot = new Node();
+        newRoot.setLeft(root);
+        newRoot.setRight(rope.root);
+        int len = root.getLen();
+        if (root.getRight() != null)
+            len += root.getRight().getLen();
+        newRoot.setLen(len);
+    }
+    
 
 }
