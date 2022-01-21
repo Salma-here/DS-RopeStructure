@@ -4,6 +4,10 @@ public class Rope {
     private Node root;
     private static int count;
 
+    public Node getRoot() {//TODO delete this
+        return root;
+    }
+
     public Rope(String str) { // 'new'
         String[] words = str.split(" ");
         for (int i = 0; i < words.length - 1; i++) {
@@ -46,37 +50,41 @@ public class Rope {
 
     public void show() { // 'status' //inorder traversal
         Node p = root;
-        Stack<Node> s = new Stack<Node>();
-        System.out.print(count + ". ");
-        do {
-            while (p != null) {
-                s.push(p);
-                p = p.getLeft();
-            }
-            if (!s.isEmpty()) {
-                p = s.pop();
-                //code for showing string
-                if (p instanceof Leaf) {
-                    Leaf tmp = (Leaf) p;
-                    System.out.print(tmp.getData());
+        if (p != null) {
+            Stack<Node> s = new Stack<Node>();
+            System.out.print(count + ". ");
+            do {
+                while (p != null) {
+                    s.push(p);
+                    p = p.getLeft();
                 }
-                //end code for showing string
-                p = p.getRight();
-            }
-        } while (!s.isEmpty() || p != null);
-        System.out.println();
+                if (!s.isEmpty()) {
+                    p = s.pop();
+                    //code for showing string
+                    if (p instanceof Leaf) {
+                        Leaf tmp = (Leaf) p;
+                        System.out.print(tmp.getData());
+                    }
+                    //end code for showing string
+                    p = p.getRight();
+                }
+            } while (!s.isEmpty() || p != null);
+            System.out.println();
+        }
     }
 
 
-    public char indexAt(Node node, int index) {
-        if (node.getLen() < index && node.getRight() != null)
+    public char indexAt(Node node, int index) { //TODO change name to index?
+        if (node.getLen() <= index && node.getRight() != null)
             return indexAt(node.getRight(), index - node.getLen());
         if (node.getLeft() != null)
             return indexAt(node.getLeft(), index);
         if (node instanceof Leaf) {
             Leaf leaf = (Leaf) node;
-            return leaf.getData().charAt(index);
+            if (index < leaf.getLen())
+                return leaf.getData().charAt(index);
         }
+        System.out.println("a problem has occurred.");
         return ' ';//TODO
     }
 
@@ -88,7 +96,10 @@ public class Rope {
         if (root.getRight() != null)
             len += root.getRight().getLen();
         newRoot.setLen(len);
+        root = newRoot;
+        rope.root = null;
+        count--;
     }
-    
+
 
 }
