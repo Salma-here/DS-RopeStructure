@@ -20,6 +20,6 @@ public class Main {
                 "hello", "hey", "hell", "nice"
         };
         Trie t = new Trie(words);
-        t.showTrie();
+        t.autocomplete('h');
     }
 }
