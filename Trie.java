@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.List;
 
 public class Trie {
     private TrieNode root;
@@ -8,8 +7,8 @@ public class Trie {
         root = new TrieNode();
         root.setCharacter('_');
         root.setWord(false);
-        for (int i = 0; i < words.length; i++)
-            insert(words[i]);
+        for (String word : words)
+            insert(word);
     }
 
 
@@ -27,34 +26,26 @@ public class Trie {
 
 
     public void autocomplete(char c) {
-        ArrayList<String> list=null;
+        ArrayList<String> list = new ArrayList<>();
+        TrieNode temp = root.getChildren()[c - 'a'];
         StringBuffer buffer = new StringBuffer();
-        int index = c - 'a';
-        TrieNode temp = root.getChildren()[index];
-        buffer.append(temp.getCharacter());
-//        if (temp.isWord())
-//            list.add(buffer.toString());
-        for (int i = 0; i < temp.getChildren().length; i++) {
-            TrieNode child = temp.getChildren()[i];
-            if (child != null) {
-                list = helper(child, buffer);
-            }
+        list = scan(temp, buffer, 0, list);
+        for (int i = 0; i < list.size(); i++) {
+            System.out.println(i+1 + ". " + list.get(i));
         }
-        for (String item: list)
-            System.out.println(item);
     }
 
-    public ArrayList<String> helper(TrieNode node, StringBuffer buffer) {
-        ArrayList<String> list = new ArrayList<>();
+    public ArrayList<String> scan(TrieNode node, StringBuffer buffer, int position, ArrayList<String> list) {
+        buffer = new StringBuffer(buffer.substring(0, position));
         buffer.append(node.getCharacter());
+        position++;
         if (node.isWord()) {
             list.add(buffer.toString());
-            System.out.println(list);
         }
-        for (int i = 0; i < node.getChildren().length; i++) {
-            TrieNode temp = node.getChildren()[i];
-            if (temp != null)
-                helper(temp, buffer);
+        for(TrieNode child: node.getChildren()){
+            if(child != null){
+                list = scan(child, buffer, position, list);
+            }
         }
         return list;
     }

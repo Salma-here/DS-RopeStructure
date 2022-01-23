@@ -17,9 +17,9 @@ public class Main {
 //        r3.show();
 
         String[] words = {
-                "hello", "hey", "hell", "nice"
+                "hello", "hey", "hell", "nice", "neat", "narrow", "nickel"
         };
         Trie t = new Trie(words);
-        t.autocomplete('h');
+        t.autocomplete('n');
     }
 }
