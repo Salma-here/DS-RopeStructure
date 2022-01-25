@@ -2,8 +2,6 @@ import java.util.Stack;
 
 public class Rope {
     private Node root;
-    private static int count;
-
     public Node getRoot() {//TODO delete this
         return root;
     }
@@ -14,7 +12,7 @@ public class Rope {
             words[i] += " ";
         }
         createRope(words, 0, words.length - 1, null, ' ');
-        count++;
+
     }
 
     private void createRope(String[] words, int first, int last, Node par, char childType) {
@@ -52,7 +50,6 @@ public class Rope {
         Node p = root;
         if (p != null) {
             Stack<Node> s = new Stack<Node>();
-            System.out.print(count + ". ");
             do {
                 while (p != null) {
                     s.push(p);
@@ -73,6 +70,9 @@ public class Rope {
         }
     }
 
+    public char index(int index){
+        return indexAt(root,index);
+    }
 
     public char indexAt(Node node, int index) { //TODO change name to index?
         if (node.getLen() <= index && node.getRight() != null)
@@ -98,8 +98,24 @@ public class Rope {
         newRoot.setLen(len);
         root = newRoot;
         rope.root = null;
-        count--;
     }
 
+    public Rope split(int index){
+        Rope rope=new Rope("Hi");
+        return rope;
+    }//TODO
+
+    public void insert(Rope rope,int index){
+        Rope lastRope=split(index);
+        Rope middleRope=rope;
+        middleRope.concat(lastRope);
+        this.concat(middleRope);
+    }
+
+    public void delete(int i,int j){
+        Rope lastRope=split(i);
+        lastRope=lastRope.split(j-1);
+        this.concat(lastRope);
+    }
 
 }
