@@ -19,7 +19,7 @@ public class Item {
         return priority;
     }
 
-    public void setPriority(int priority) {
-        this.priority = priority;
+    public void addPriority() {
+        priority++;
     }
 }

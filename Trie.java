@@ -1,14 +1,12 @@
 import java.util.ArrayList;
 
 public class Trie {
-    private TrieNode root;
+    private final TrieNode root;
 
-    public Trie(String[] words) {
+    public Trie() {
         root = new TrieNode();
         root.setCharacter('_');
         root.setWord(false);
-        for (String word : words)
-            insert(word);
     }
 
 
@@ -25,32 +23,34 @@ public class Trie {
     }
 
 
-    public void autocomplete(String prefix) {
+    public ArrayList<Item> autocomplete(String prefix) {
         TrieNode node = root;
         for (int i = 0; i < prefix.length(); i++) {
             int index = prefix.charAt(i) - 'a';
             if (node.getChildren()[index] == null) {
                 System.out.println("Not found");
-                return;
+                return null;
             } else
                 node = node.getChildren()[index];
         }
         char c = prefix.charAt(prefix.length() - 1);
-        ArrayList<String> list = new ArrayList<>();
-        TrieNode temp = node.getChildren()[c - 'a'];
+        ArrayList<Item> list = new ArrayList<>();
         StringBuffer buffer = new StringBuffer(prefix);
         list = scan(node, buffer, prefix.length() - 1, list);
-        for (int i = 0; i < list.size(); i++) {
-            System.out.println(i + 1 + ". " + list.get(i));
-        }
+//        for (int i = 0; i < list.size(); i++) {
+//            System.out.println(i + 1 + ". " + list.get(i));
+//        }
+//        mostRepeated(list);
+        return list;
     }
 
-    public ArrayList<String> scan(TrieNode node, StringBuffer buffer, int position, ArrayList<String> list) {
+    public ArrayList<Item> scan(TrieNode node, StringBuffer buffer, int position, ArrayList<Item> list) {
         buffer = new StringBuffer(buffer.substring(0, position));
         buffer.append(node.getCharacter());
         position++;
         if (node.isWord()) {
-            list.add(buffer.toString());
+            Item item = new Item(buffer.toString(), node.getRep());
+            list.add(item);
         }
         for (TrieNode child : node.getChildren()) {
             if (child != null) {
@@ -60,12 +60,24 @@ public class Trie {
         return list;
     }
 
-    public void mostRepeated(Item[] list) {
-        PriorityQueue queue = new PriorityQueue(list.length);
+    public Item[] mostRepeated(String prefix) {
+        ArrayList<Item> list = autocomplete(prefix);
+        PriorityQueue queue = new PriorityQueue(list.size());
+        Item[] items = new Item[3];
         for (Item item : list)
             queue.add(item);
         for (int i = 0; i < 3; i++) {
-            System.out.println(String.valueOf(i + 1) + ". " + queue.delete().getData());
+            items[i] = queue.delete();
+            System.out.println((i + 1) + ". " + items[i].getData());
         }
+        return items;
+    }
+
+    public void addPriority(String str){
+        TrieNode node=root;
+        for (int i = 0; i < str.length(); i++) {
+            node=node.getChildren()[str.charAt(i)-'a'];
+        }
+        node.addRep();
     }
 }

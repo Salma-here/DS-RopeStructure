@@ -2,7 +2,8 @@ public class TrieNode {
     private boolean isWord;
     private final int SIZE = 26;
     private char character;
-    private TrieNode[] children = new TrieNode[SIZE];
+    private final TrieNode[] children = new TrieNode[SIZE];
+    private int rep = 0;
 
     public TrieNode() {
         isWord = false;
@@ -30,7 +31,12 @@ public class TrieNode {
         return children;
     }
 
-    public void setChildren(TrieNode[] children) {
-        this.children = children;
+    public int getRep() {
+        return rep;
+    }
+
+    public void addRep() {
+        if (isWord)
+            rep++;
     }
 }

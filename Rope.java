@@ -2,9 +2,6 @@ import java.util.Stack;
 
 public class Rope {
     private Node root;
-    public Node getRoot() {//TODO delete this
-        return root;
-    }
 
     public Rope(String str) { // 'new'
         String[] words = str.split(" ");
@@ -12,7 +9,10 @@ public class Rope {
             words[i] += " ";
         }
         createRope(words, 0, words.length - 1, null, ' ');
+    }
 
+    public boolean isEmpty(){
+        return root == null;
     }
 
     private void createRope(String[] words, int first, int last, Node par, char childType) {
@@ -38,18 +38,28 @@ public class Rope {
             createRope(words, (first + leftCount), last, p, 'r');
         } else { //first == last
             Leaf p = new Leaf(words[first]); //or words[last] doesn't matter
-            if (childType == 'l') {
-                par.setLeft(p);
+            if (par != null) {
+                if (childType == 'l') {
+                    par.setLeft(p);
+                } else {
+                    par.setRight(p);
+                }
             } else {
-                par.setRight(p);
+                root = new Node(p.getLen());
+                root.setLeft(p);
             }
         }
     }
 
-    public void show() { // 'status' //inorder traversal
+    public void show() { // 'status'
+        System.out.println(getString());
+    }
+
+    public String getString(){ //inorder traversal
         Node p = root;
+        StringBuffer buffer = new StringBuffer();
         if (p != null) {
-            Stack<Node> s = new Stack<Node>();
+            Stack<Node> s = new Stack<>();
             do {
                 while (p != null) {
                     s.push(p);
@@ -60,14 +70,14 @@ public class Rope {
                     //code for showing string
                     if (p instanceof Leaf) {
                         Leaf tmp = (Leaf) p;
-                        System.out.print(tmp.getData());
+                        buffer.append(tmp.getData());
                     }
                     //end code for showing string
                     p = p.getRight();
                 }
             } while (!s.isEmpty() || p != null);
-            System.out.println();
         }
+        return buffer.toString();
     }
 
     public char index(int index){
@@ -100,22 +110,20 @@ public class Rope {
         rope.root = null;
     }
 
-    public Rope split(int index){
-        Rope rope=new Rope("Hi");
+    public Rope split(int index) {
+        Rope rope = new Rope("Hi");
         return rope;
     }//TODO
 
-    public void insert(Rope rope,int index){
-        Rope lastRope=split(index);
-        Rope middleRope=rope;
-        middleRope.concat(lastRope);
-        this.concat(middleRope);
+    public void insert(Rope rope, int index) {
+        Rope lastRope = split(index);
+        rope.concat(lastRope);
+        this.concat(rope);
     }
 
-    public void delete(int i,int j){
-        Rope lastRope=split(i);
-        lastRope=lastRope.split(j-1);
+    public void delete(int i, int j) {
+        Rope lastRope = split(i);
+        lastRope = lastRope.split(j - 1);
         this.concat(lastRope);
     }
-
 }
