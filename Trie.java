@@ -11,6 +11,7 @@ public class Trie {
 
 
     public void insert(String word) {
+        word=word.toLowerCase();
         TrieNode temp = root;
         for (int i = 0; i < word.length(); i++) {
             int index = word.charAt(i) - 'a';
@@ -37,10 +38,6 @@ public class Trie {
         ArrayList<Item> list = new ArrayList<>();
         StringBuffer buffer = new StringBuffer(prefix);
         list = scan(node, buffer, prefix.length() - 1, list);
-//        for (int i = 0; i < list.size(); i++) {
-//            System.out.println(i + 1 + ". " + list.get(i));
-//        }
-//        mostRepeated(list);
         return list;
     }
 
@@ -62,13 +59,15 @@ public class Trie {
 
     public Item[] mostRepeated(String prefix) {
         ArrayList<Item> list = autocomplete(prefix);
-        PriorityQueue queue = new PriorityQueue(list.size());
         Item[] items = new Item[3];
-        for (Item item : list)
-            queue.add(item);
-        for (int i = 0; i < 3; i++) {
-            items[i] = queue.delete();
-            System.out.println((i + 1) + ". " + items[i].getData());
+        if (list!=null) {
+            PriorityQueue queue = new PriorityQueue(list.size());
+            for (Item item : list)
+                queue.add(item);
+            for (int i = 0; i < Math.min(3,list.size()); i++) {
+                items[i] = queue.delete();
+                System.out.println((i + 1) + ". " + items[i].getData());
+            }
         }
         return items;
     }
@@ -79,5 +78,15 @@ public class Trie {
             node=node.getChildren()[str.charAt(i)-'a'];
         }
         node.addRep();
+    }
+
+    public Item[] allWords(String prefix){
+        ArrayList<Item> list = autocomplete(prefix);
+        Item[] items = new Item[list.size()];
+        for (int i = 0; i < items.length; i++) {
+            items[i]= list.get(i);
+            System.out.println((i + 1) + ". " + items[i].getData());
+        }
+        return items;
     }
 }
