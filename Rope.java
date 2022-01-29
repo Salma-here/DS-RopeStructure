@@ -1,14 +1,19 @@
+import java.io.PrintStream;
 import java.util.Stack;
 
 public class Rope {
     private Node root;
 
     public Rope(String str) { // 'new'
+        //String[] words = str.split("(?<=\\G.{5})"); //splits by length of 5.
         String[] words = str.split(" ");
-        for (int i = 0; i < words.length - 1; i++) {
+        for (int i = 0; i < words.length - 1; i++)
             words[i] += " ";
-        }
         createRope(words, 0, words.length - 1, null, ' ');
+    }
+
+    public Rope(Node root) {
+        this.root = root;
     }
 
     public boolean isEmpty() {
@@ -81,21 +86,21 @@ public class Rope {
     }
 
     public char index(int index) {
-        return indexAt(root, index);
+        return findIndex(root, index);
     }
 
-    public char indexAt(Node node, int index) { //TODO change name to index?
+    public char findIndex(Node node, int index) {
         if (node.getLen() <= index && node.getRight() != null)
-            return indexAt(node.getRight(), index - node.getLen());
+            return findIndex(node.getRight(), index - node.getLen());
         if (node.getLeft() != null)
-            return indexAt(node.getLeft(), index);
+            return findIndex(node.getLeft(), index);
         if (node instanceof Leaf) {
             Leaf leaf = (Leaf) node;
             if (index < leaf.getLen())
                 return leaf.getData().charAt(index);
         }
         System.out.println("a problem has occurred.");
-        return ' ';//TODO
+        return ' ';//what todo
     }
 
     public void concat(Rope rope) {
@@ -111,9 +116,24 @@ public class Rope {
     }
 
     public Rope split(int index) {
-        Rope rope = new Rope("Hi");
-        return rope;
-    }//TODO
+        Rope otherRope;
+        Node splitPoint = findSplitPoint(index);
+        Node root = splitByNode(splitPoint);
+        if (root instanceof Leaf) {
+            Leaf l = (Leaf) root;
+            Node temp = new Node(l.getLen());
+            temp.setLeft(l);
+            root = temp;
+        }
+        if (index < this.root.getLen()) { //returned root is root of other rope
+            otherRope = new Rope(root);
+        } else { //this.root should be replaced with returned root
+            Node temp = this.root;
+            this.root = root;
+            otherRope = new Rope(temp);
+        }
+        return otherRope;
+    }
 
     public Node findSplitPoint(int index) { //only works for split point at the end of a string
         Node node = root;
@@ -131,70 +151,48 @@ public class Rope {
     }
 
     public Node splitByNode(Node node) {
-        //remove right and left link
         Node rChild = node.getRight();
-        Node lChild = node.getLeft();
-        node.setRight(null);
-        //node.setLeft(null);?
-
-        Node rParent, lParent;
+        Node rParent = node;
+        Node lChild = null;
+        Node lParent;
         Node root = rChild;
-        //node = lChild;?
-
         while (true) {
-            lParent = nearestLeft(this.root, rChild);
+            lParent = nearestLeft(this.root, rChild, null);
+            rParent.setRight(lChild);
             if (lParent == null)
                 break;
             root = lChild = lParent.getLeft();
-            lParent.setLeft(rChild);
 
-            rParent = nearestRight(this.root, lChild);
+            rParent = nearestRight(this.root, lChild, null);
+            lParent.setLeft(rChild);
             if (rParent == null)
                 break;
             root = rChild = rParent.getRight();
-            rParent.setRight(lChild);
         }
-
-        //todo
-        //one root is found and saved in "root"
-        //if given index is larger than original root's length,
-        //then "root" is root of other rope.
-        //if not, this.root should be replaced with "root"
-        return root; //temporary
+        return root;
     }
 
-    public Node nearestRight(Node root, Node node){
-        //returns parent of the nearest ancestor to given node that is a RIGHT child
-        //base case
-        if(root == null)
+    public Node nearestRight(Node root, Node node, Node rParent) {
+        if (root == null)
             return null;
-        Node rChild = root.getRight();
-        if(rChild.getLeft() == node || rChild.getRight() == node){
-            return root;
-        }
-        Node left = nearestRight(root.getLeft(), node);
-        if(left == null)
-            return nearestRight(root.getRight(), node);
-        else
-            return left;
+        if (root.getLeft() == node || root.getRight() == node)
+            return rParent;
+        Node right = nearestRight(root.getRight(), node, root);
+        if (right != null)
+            return right;
+        return nearestRight(root.getLeft(), node, rParent);
     }
 
-    public Node nearestLeft(Node root, Node node){
-        //returns parent of the nearest ancestor to given node that is a LEFT child
-        //base case
-        if(root == null)
+    public Node nearestLeft(Node root, Node node, Node lParent) {
+        if (root == null)
             return null;
-        Node lChild = root.getLeft();
-        if(lChild.getLeft() == node || lChild.getRight() == node){
-            return root;
-        }
-        Node left = nearestLeft(root.getLeft(), node);
-        if(left == null)
-            return nearestLeft(root.getRight(), node);
-        else
+        if (root.getRight() == node || root.getLeft() == node)
+            return lParent;
+        Node left = nearestLeft(root.getLeft(), node, root);
+        if (left != null)
             return left;
+        return nearestLeft(root.getRight(), node, lParent);
     }
-
 
     public void insert(Rope rope, int index) {
         Rope lastRope = split(index);
@@ -206,5 +204,34 @@ public class Rope {
         Rope lastRope = split(i);
         lastRope = lastRope.split(j - 1);
         this.concat(lastRope);
+    }
+
+    public void traversePreOrder(StringBuilder sb, String padding, String pointer, Node node) {
+        if (node != null) {
+            sb.append(padding);
+            sb.append(pointer);
+            if (node instanceof Leaf) {
+                Leaf l = (Leaf) node;
+                sb.append(l.getData());
+            } else
+                sb.append(node.getLen());
+            sb.append("\n");
+
+            StringBuilder paddingBuilder = new StringBuilder(padding);
+            paddingBuilder.append("│  ");
+
+            String paddingForBoth = paddingBuilder.toString();
+            String pointerForRight = "└──";
+            String pointerForLeft = (node.getRight() != null) ? "├──" : "└──";
+
+            traversePreOrder(sb, paddingForBoth, pointerForLeft, node.getLeft());
+            traversePreOrder(sb, paddingForBoth, pointerForRight, node.getRight());
+        }
+    }
+
+    public void print(PrintStream os) {
+        StringBuilder sb = new StringBuilder();
+        traversePreOrder(sb, "", "", this.root);
+        os.print(sb.toString());
     }
 }

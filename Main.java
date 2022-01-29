@@ -65,8 +65,8 @@ public class Main {
                     int stringNum = Integer.parseInt(input.split(" ")[1]) - 1;
                     int index = Integer.parseInt(input.split(" ")[2]);
                     Rope rope = ropes.get(stringNum);
-                    ropes.add(rope.split(index));
-                    ropes.add(stringNum, rope);
+                    Rope otherRope = rope.split(index);
+                    ropes.add(otherRope);
                 }
             } else if (input.startsWith("delete")) {
                 if (input.split(" ").length == 4) {
