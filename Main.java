@@ -14,6 +14,7 @@ public class Main {
         }
         Scanner scanner = new Scanner(System.in);
         ArrayList<Rope> ropes = new ArrayList<>();
+        System.out.println("--Rope data structure--");
         while (true) {
             String input = scanner.nextLine();
             if (input.equalsIgnoreCase("status")) {
@@ -30,25 +31,25 @@ public class Main {
                 }
             } else if (input.startsWith("new")) {
                 String temp = input.substring(input.indexOf('\"') + 1, input.length() - 1);
-                ropes.add(new Rope(temp));
+                ropes.add(new Rope(temp));//Creating new Rope and adding to array list
             } else if (input.startsWith("index")) {
                 if (input.split(" ").length == 3) {
                     int stringNumber = Integer.parseInt(input.split(" ")[1]);
                     int index = Integer.parseInt(input.split(" ")[2]);
-                    if (stringNumber > ropes.size()) {
+                    if (stringNumber > ropes.size()) {//Wrong order
                         System.out.println("invalid argument.");
                         continue;
                     }
-                    Rope rope = ropes.get(stringNumber - 1);
+                    Rope rope = ropes.get(stringNumber - 1);//Found it from array list
                     System.out.println(rope.index(index));
                 }
             } else if (input.startsWith("concat")) {
                 if (input.split(" ").length == 3) {
                     int firstStr = Integer.parseInt(input.split(" ")[1]) - 1;
                     int lastStr = Integer.parseInt(input.split(" ")[2]) - 1;
-                    Rope rope = ropes.get(firstStr);
+                    Rope rope = ropes.get(firstStr);//Found first input from array list
                     rope.concat(ropes.get(lastStr));
-                    ropes.remove(lastStr);
+                    ropes.remove(lastStr);//remove second input from array list
                 }
             } else if (input.startsWith("insert")) {
                 if (input.split(" ").length == 4) {
@@ -81,46 +82,45 @@ public class Main {
                     String prefix = input.split(" ")[1];
                     System.out.println("If you want to have all possible words enter 1");
                     System.out.println("If you want to have 3 most repeated words enter 2");
-                    int x=0;
+                    int x = 0;
                     try {
                         x = scanner.nextInt();
-//                        scanner.skip("[\r\n]+");
                     } catch (InputMismatchException e) {
                         System.out.println(" You should enter number! ");
                     }
                     Item[] items;
-                    if (x==2) {
+                    if (x == 2) {
                         items = words.mostRepeated(prefix);
-                    }else if (x==1){
-                        items=words.allWords(prefix);
-                    }else
+                    } else if (x == 1) {
+                        items = words.allWords(prefix);
+                    } else
                         continue;
-                        if (items[0] != null) {
-                            System.out.println("Please choose one of them: ");
-                            int n = 0;
-                            try {
-                                n = scanner.nextInt();
-                                scanner.skip("[\r\n]+");
-                            } catch (InputMismatchException e) {
-                                System.out.println(" You should enter number! ");
+                    if (items[0] != null) {
+                        System.out.println("Please choose one of them: ");
+                        int n = 0;
+                        try {
+                            n = scanner.nextInt();
+                            scanner.skip("[\r\n]+");
+                        } catch (InputMismatchException e) {
+                            System.out.println(" You should enter number! ");
+                        }
+                        if (n >= 1 && n <= items.length) {
+                            String str = items[n - 1].getData();
+                            int i = 0;
+                            for (; i < ropes.size(); i++) {
+                                if (ropes.get(i).getString().equals(str)) {
+                                    System.out.println("string already added.");
+                                    break;
+                                }
                             }
-                            if (n >= 1 && n <= items.length) {
-                                String str = items[n - 1].getData();
-                                int i = 0;
-                                for (; i < ropes.size(); i++) {
-                                    if (ropes.get(i).getString().equals(str)) {
-                                        System.out.println("string already added.");
-                                        break;
-                                    }
-                                }
-                                if (i == ropes.size()) {
-                                    Rope rope = new Rope(str);
-                                    if (!ropes.contains(rope))
-                                        ropes.add(rope);
-                                    words.addPriority(str);
-                                }
+                            if (i == ropes.size()) {
+                                Rope rope = new Rope(str);
+                                if (!ropes.contains(rope))
+                                    ropes.add(rope);
+                                words.addPriority(str);
                             }
                         }
+                    }
                 }
             } else if (input.equalsIgnoreCase("q")) {
                 break;

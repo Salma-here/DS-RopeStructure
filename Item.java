@@ -11,15 +11,8 @@ public class Item {
         return data;
     }
 
-    public void setData(String data) {
-        this.data = data;
-    }
-
     public int getPriority() {
         return priority;
     }
 
-    public void addPriority() {
-        priority++;
-    }
 }

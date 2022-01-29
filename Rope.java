@@ -11,7 +11,7 @@ public class Rope {
         createRope(words, 0, words.length - 1, null, ' ');
     }
 
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         return root == null;
     }
 
@@ -55,7 +55,7 @@ public class Rope {
         System.out.println(getString());
     }
 
-    public String getString(){ //inorder traversal
+    public String getString() { //inorder traversal
         Node p = root;
         StringBuffer buffer = new StringBuffer();
         if (p != null) {
@@ -80,8 +80,8 @@ public class Rope {
         return buffer.toString();
     }
 
-    public char index(int index){
-        return indexAt(root,index);
+    public char index(int index) {
+        return indexAt(root, index);
     }
 
     public char indexAt(Node node, int index) { //TODO change name to index?
@@ -115,24 +115,22 @@ public class Rope {
         return rope;
     }//TODO
 
-    public Node findSplitPoint(int index){ //only works for split point at the end of a string
+    public Node findSplitPoint(int index) { //only works for split point at the end of a string
         Node node = root;
         index++;
-        while(true){
+        while (true) {
             int len = node.getLen();
-            if(index > len){
+            if (index > len) {
                 node = node.getRight();
                 index -= len;
-            }
-            else if(index < len){
+            } else if (index < len) {
                 node = node.getLeft();
-            }
-            else
+            } else
                 return node; //send node to "splitByNode" method
         }
     }
 
-    public Node splitByNode(Node node){
+    public Node splitByNode(Node node) {
         //remove right and left link
         Node rChild = node.getRight();
         Node lChild = node.getLeft();
@@ -143,15 +141,15 @@ public class Rope {
         Node root = rChild;
         //node = lChild;?
 
-        while(true){
+        while (true) {
             lParent = nearestLeft(this.root, rChild);
-            if(lParent == null)
+            if (lParent == null)
                 break;
             root = lChild = lParent.getLeft();
             lParent.setLeft(rChild);
 
             rParent = nearestRight(this.root, lChild);
-            if(rParent == null)
+            if (rParent == null)
                 break;
             root = rChild = rParent.getRight();
             rParent.setRight(lChild);
@@ -165,33 +163,33 @@ public class Rope {
         return root; //temporary
     }
 
-    public Node nearestRight(Node root, Node node){
+    public Node nearestRight(Node root, Node node) {
         //returns parent of the nearest ancestor to given node that is a RIGHT child
         //base case
-        if(root == null)
+        if (root == null)
             return null;
         Node rChild = root.getRight();
-        if(rChild.getLeft() == node || rChild.getRight() == node){
+        if (rChild.getLeft() == node || rChild.getRight() == node) {
             return root;
         }
         Node left = nearestRight(root.getLeft(), node);
-        if(left == null)
+        if (left == null)
             return nearestRight(root.getRight(), node);
         else
             return left;
     }
 
-    public Node nearestLeft(Node root, Node node){
+    public Node nearestLeft(Node root, Node node) {
         //returns parent of the nearest ancestor to given node that is a LEFT child
         //base case
-        if(root == null)
+        if (root == null)
             return null;
         Node lChild = root.getLeft();
-        if(lChild.getLeft() == node || lChild.getRight() == node){
+        if (lChild.getLeft() == node || lChild.getRight() == node) {
             return root;
         }
         Node left = nearestLeft(root.getLeft(), node);
-        if(left == null)
+        if (left == null)
             return nearestLeft(root.getRight(), node);
         else
             return left;

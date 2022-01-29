@@ -11,6 +11,8 @@ public class Trie {
 
 
     public void insert(String word) {
+        // If not present, inserts key into trie
+        // If the key is prefix of trie node,just marks leaf node
         word=word.toLowerCase();
         TrieNode temp = root;
         for (int i = 0; i < word.length(); i++) {
@@ -34,7 +36,6 @@ public class Trie {
             } else
                 node = node.getChildren()[index];
         }
-        char c = prefix.charAt(prefix.length() - 1);
         ArrayList<Item> list = new ArrayList<>();
         StringBuffer buffer = new StringBuffer(prefix);
         list = scan(node, buffer, prefix.length() - 1, list);
@@ -57,7 +58,7 @@ public class Trie {
         return list;
     }
 
-    public Item[] mostRepeated(String prefix) {
+    public Item[] mostRepeated(String prefix) {//an Option for auto complete
         ArrayList<Item> list = autocomplete(prefix);
         Item[] items = new Item[3];
         if (list!=null) {
@@ -80,7 +81,7 @@ public class Trie {
         node.addRep();
     }
 
-    public Item[] allWords(String prefix){
+    public Item[] allWords(String prefix){//an Option for auto complete
         ArrayList<Item> list = autocomplete(prefix);
         Item[] items = new Item[list.size()];
         for (int i = 0; i < items.length; i++) {

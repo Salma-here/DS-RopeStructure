@@ -29,10 +29,4 @@ public class PriorityQueue {
             return items[front++];
         return null;
     }
-
-    public void show() {
-        for (int i = front; i <= rear; i++) {
-            System.out.println(items[i].getData());
-        }
-    }
 }

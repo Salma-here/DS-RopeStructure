@@ -1,6 +1,6 @@
 public class TrieNode {
     private boolean isWord;
-    private final int SIZE = 26;
+    private final int SIZE = 26;// Alphabet size (# of symbols)
     private char character;
     private final TrieNode[] children = new TrieNode[SIZE];
     private int rep = 0;
@@ -35,7 +35,7 @@ public class TrieNode {
         return rep;
     }
 
-    public void addRep() {
+    public void addRep() {//for priority
         if (isWord)
             rep++;
     }
