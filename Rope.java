@@ -163,37 +163,38 @@ public class Rope {
         return root; //temporary
     }
 
-    public Node nearestRight(Node root, Node node) {
+    public Node nearestRight(Node root, Node node){
         //returns parent of the nearest ancestor to given node that is a RIGHT child
         //base case
-        if (root == null)
+        if(root == null)
             return null;
         Node rChild = root.getRight();
-        if (rChild.getLeft() == node || rChild.getRight() == node) {
+        if(rChild.getLeft() == node || rChild.getRight() == node){
             return root;
         }
         Node left = nearestRight(root.getLeft(), node);
-        if (left == null)
+        if(left == null)
             return nearestRight(root.getRight(), node);
         else
             return left;
     }
 
-    public Node nearestLeft(Node root, Node node) {
+    public Node nearestLeft(Node root, Node node){
         //returns parent of the nearest ancestor to given node that is a LEFT child
         //base case
-        if (root == null)
+        if(root == null)
             return null;
         Node lChild = root.getLeft();
-        if (lChild.getLeft() == node || lChild.getRight() == node) {
+        if(lChild.getLeft() == node || lChild.getRight() == node){
             return root;
         }
         Node left = nearestLeft(root.getLeft(), node);
-        if (left == null)
+        if(left == null)
             return nearestLeft(root.getRight(), node);
         else
             return left;
     }
+
 
     public void insert(Rope rope, int index) {
         Rope lastRope = split(index);
