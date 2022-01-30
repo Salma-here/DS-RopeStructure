@@ -31,7 +31,6 @@ public class Trie {
         for (int i = 0; i < prefix.length(); i++) {
             int index = prefix.charAt(i) - 'a';
             if (node.getChildren()[index] == null) {
-                //System.out.println("Not found");
                 return null;
             } else
                 node = node.getChildren()[index];
@@ -68,7 +67,7 @@ public class Trie {
             queue.add(item);
         for (int i = 0; i < Math.min(3,list.size()); i++) {
             items[i] = queue.delete();
-            System.out.println((i + 1) + ". " + items[i].getData());
+            System.out.println((i + 1) + ". " + items[i].getData()+items[i].getPriority());
         }
         return items;
     }

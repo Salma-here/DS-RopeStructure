@@ -1,4 +1,4 @@
-public class Leaf extends Node{
+public class Leaf extends Node {
     private String data;
 
     public Leaf(String data) {

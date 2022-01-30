@@ -7,9 +7,6 @@ public class Rope {
 
     public Rope(String str) { // 'new'
         String[] words = str.split("(?<=\\G.{5})"); //splits by length of 5.
-        //String[] words = str.split(" ");
-        //for (int i = 0; i < words.length - 1; i++)
-            //words[i] += " ";
         createRope(words, 0, words.length - 1, null, ' ');
     }
 
@@ -109,14 +106,10 @@ public class Rope {
                 return leaf.getData().charAt(index);
         }
         System.out.println("a problem has occurred.");
-        return ' ';//what todo
+        return ' ';
     }
 
     public void concat(Rope rope) {
-//        if(isEmpty())
-//            root = rope.root;
-//        if(rope.isEmpty())
-//            return;
         Node newRoot = new Node();
         newRoot.setLeft(root);
         newRoot.setRight(rope.root);
@@ -263,6 +256,10 @@ public class Rope {
             System.out.println("index out of bounds.");
             return;
         }
+        if (index==getString().length()-1) {
+            this.concat(rope);
+            return;
+        }
         Rope lastRope = split(index);
         rope.concat(lastRope);
         this.concat(rope);
@@ -272,7 +269,7 @@ public class Rope {
     public void delete(int i, int j) {
         if(i >= 0 && i < j - 1 && j < getString().length()) {
             Rope lastRope = split(i);
-            lastRope = lastRope.split(j - 1);
+            lastRope = lastRope.split(j - i-1);
             this.concat(lastRope);
             correctLengths();
             return;
@@ -306,34 +303,5 @@ public class Rope {
                 }
             } while (!s.isEmpty() || p != null);
         }
-    }
-
-    public void traversePreOrder(StringBuilder sb, String padding, String pointer, Node node) {
-        if (node != null) {
-            sb.append(padding);
-            sb.append(pointer);
-            if (node instanceof Leaf) {
-                Leaf l = (Leaf) node;
-                sb.append(l.getData());
-            } else
-                sb.append(node.getLen());
-            sb.append("\n");
-
-            StringBuilder paddingBuilder = new StringBuilder(padding);
-            paddingBuilder.append("│  ");
-
-            String paddingForBoth = paddingBuilder.toString();
-            String pointerForRight = "└──";
-            String pointerForLeft = (node.getRight() != null) ? "├──" : "└──";
-
-            traversePreOrder(sb, paddingForBoth, pointerForLeft, node.getLeft());
-            traversePreOrder(sb, paddingForBoth, pointerForRight, node.getRight());
-        }
-    }
-
-    public void print(PrintStream os) {
-        StringBuilder sb = new StringBuilder();
-        traversePreOrder(sb, "", "", this.root);
-        os.print(sb.toString());
     }
 }
