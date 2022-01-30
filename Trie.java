@@ -51,7 +51,7 @@ public class Trie {
         }
         for (TrieNode child : node.getChildren()) {
             if (child != null) {
-                list = scan(child, buffer, position, list);
+                list = scan(child, buffer, position, list);//because for branches of trie
             }
         }
         return list;
@@ -67,7 +67,7 @@ public class Trie {
             queue.add(item);
         for (int i = 0; i < Math.min(3,list.size()); i++) {
             items[i] = queue.delete();
-            System.out.println((i + 1) + ". " + items[i].getData()+items[i].getPriority());
+            System.out.println((i + 1) + ". " + items[i].getData());
         }
         return items;
     }

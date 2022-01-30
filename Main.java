@@ -21,7 +21,6 @@ public class Main {
             if (input.equalsIgnoreCase("status")) {
                 if (ropes.size() == 0)
                     System.out.println("No Strings!");
-                ropes.trimToSize();
                 int counter = 1;
                 for (int i = 0; i < ropes.size(); i++) {
                     if (ropes.get(i) != null && !ropes.get(i).isEmpty()) {
@@ -36,7 +35,7 @@ public class Main {
                 String[] command = {"new", temp};
                 stack.push(command);
             } else if (input.startsWith("index")) {
-                if (input.split(" ").length == 3) {
+                if (input.split(" ").length == 3) {//3 value
                     int stringNumber = Integer.parseInt(input.split(" ")[1]);
                     int index = Integer.parseInt(input.split(" ")[2]);
                     if (stringNumber > ropes.size()) {//Wrong order
@@ -50,12 +49,13 @@ public class Main {
                 if (input.split(" ").length == 3) {
                     int firstStr = Integer.parseInt(input.split(" ")[1]) - 1;
                     int lastStr = Integer.parseInt(input.split(" ")[2]) - 1;
-                    String[] command = {"concat", ropes.get(firstStr).getString(), ropes.get(lastStr).getString()};
+                    String[] command = {"concat", ropes.get(firstStr).getString(), ropes.get(lastStr).getString()," "};
                     stack.push(command);
                     Rope rope = ropes.get(firstStr);//Found first input from array list
                     rope.concat(ropes.get(lastStr));
                     ropes.remove(lastStr);//remove second input from array list
                     sortList(ropes);
+                    command[3]= rope.getString();
                 }
             } else if (input.startsWith("insert")) {
                 if (input.split(" ").length == 4) {
@@ -66,19 +66,21 @@ public class Main {
                     stack.push(command);
                     Rope rope = ropes.get(firstStr);
                     rope.insert(ropes.get(lastStr), index);
-                    command[4] = rope.getString();
+                    command[4] = rope.getString();//new rope
                     sortList(ropes);
                 }
             } else if (input.startsWith("split")) {
                 if (input.split(" ").length == 3) {
                     int stringNum = Integer.parseInt(input.split(" ")[1]) - 1;
                     int index = Integer.parseInt(input.split(" ")[2]);
-                    String[] command = {"split", ropes.get(stringNum).getString(), String.valueOf(index)};
+                    String[] command = {"split", ropes.get(stringNum).getString(), String.valueOf(index)," "," "};
                     stack.push(command);
                     Rope rope = ropes.get(stringNum);
                     Rope otherRope = rope.split(index);
                     ropes.add(otherRope);
                     sortList(ropes);
+                    command[3]= rope.getString();
+                    command[4]= otherRope.getString();
                 }
             } else if (input.startsWith("delete")) {
                 if (input.split(" ").length == 4) {
@@ -144,26 +146,22 @@ public class Main {
                     Rope rope = Rope.getRope(command[1], ropes);
                     ropes.remove(rope);
                 } else if (command[0].equals("concat")) {
-                    String firstStr = command[1];
-                    String secondStr = command[2];
-                    Rope rope = Rope.getRope(firstStr + secondStr, ropes);
-                    Rope other = rope.split(firstStr.length() - 1);
-                    ropes.add(other);
+                    Rope firstRope = new Rope(command[1]);
+                    Rope secondRope = new Rope(command[2]);
+                    Rope resultRope = Rope.getRope(command[3], ropes);
+                    ropes.remove(resultRope);
+                    ropes.add(firstRope);
+                    ropes.add(secondRope);
                 } else if (command[0].equals("split")) {
-                    String str = command[1];
-                    int index = Integer.parseInt(command[2]);
-                    index++;
-                    Rope firstRope = Rope.getRope(str.substring(0, index), ropes);
-                    Rope secondRope = Rope.getRope(str.substring(index), ropes);
-                    Rope finalRope = new Rope(str);
+                    Rope initialRope = new Rope(command[1]);
+                    Rope firstRope = Rope.getRope(command[3], ropes);
+                    Rope secondRope = Rope.getRope(command[4], ropes);
                     ropes.remove(firstRope);
                     ropes.remove(secondRope);
-                    ropes.add(finalRope);
+                    ropes.add(initialRope);
                 } else if (command[0].equals("insert")) {
-                    String firstStr = command[1];
-                    Rope firstRope = new Rope(firstStr);
-                    String secondStr = command[3];
-                    Rope secondRope = new Rope(secondStr);
+                    Rope firstRope = new Rope(command[1]);
+                    Rope secondRope = new Rope(command[3]);
                     Rope resultRope = Rope.getRope(command[4], ropes);
                     ropes.remove(resultRope);
                     ropes.add(firstRope);
@@ -176,8 +174,10 @@ public class Main {
                     ropes.add(initialRope);
                 }
                 sortList(ropes);
-            } else if (input.equalsIgnoreCase("clr"))
+            } else if (input.equalsIgnoreCase("clr")) {
                 ropes.clear();
+                stack = new Stack();
+            }
             else if (input.startsWith("q"))
                 break;
             else

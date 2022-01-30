@@ -6,7 +6,7 @@ public class Node {
 
     public Node(int len) {
         this();
-        this.len = len;
+        setLen(len);
     }
 
     public Node() {

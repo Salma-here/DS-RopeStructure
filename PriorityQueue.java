@@ -8,7 +8,7 @@ public class PriorityQueue {
         items = new Item[size];
     }
 
-    public void add(Item item) {
+    public void add(Item item) {//Ascending order
         int i = rear;
         if (rear == items.length - 1)
             System.out.println("full");
