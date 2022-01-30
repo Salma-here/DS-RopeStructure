@@ -5,10 +5,10 @@ public class Rope {
     private Node root;
 
     public Rope(String str) { // 'new'
-        //String[] words = str.split("(?<=\\G.{5})"); //splits by length of 5.
-        String[] words = str.split(" ");
-        for (int i = 0; i < words.length - 1; i++)
-            words[i] += " ";
+        String[] words = str.split("(?<=\\G.{5})"); //splits by length of 5.
+        //String[] words = str.split(" ");
+        //for (int i = 0; i < words.length - 1; i++)
+            //words[i] += " ";
         createRope(words, 0, words.length - 1, null, ' ');
     }
 
@@ -113,61 +113,110 @@ public class Rope {
         newRoot.setLen(len);
         root = newRoot;
         rope.root = null;
+        correctLengths();
     }
 
     public Rope split(int index) {
         Rope otherRope;
-        Node splitPoint = findSplitPoint(index);
-        Node root = splitByNode(splitPoint);
+        Node root = splitByIndex(index);
         if (root instanceof Leaf) {
             Leaf l = (Leaf) root;
             Node temp = new Node(l.getLen());
             temp.setLeft(l);
             root = temp;
         }
-        if (index < this.root.getLen()) { //returned root is root of other rope
+        if (index >= this.root.getLen()) { //returned root is root of other rope
             otherRope = new Rope(root);
         } else { //this.root should be replaced with returned root
             Node temp = this.root;
             this.root = root;
             otherRope = new Rope(temp);
         }
+        correctLengths();
+        otherRope.correctLengths();
         return otherRope;
     }
 
-    public Node findSplitPoint(int index) { //only works for split point at the end of a string
+    public Node splitByIndex(int index){
         Node node = root;
+        Node parent = null;
+        Node rChild = null, lChild = null;
+        boolean lChildFirst = false;
         index++;
         while (true) {
-            int len = node.getLen();
-            if (index > len) {
-                node = node.getRight();
-                index -= len;
-            } else if (index < len) {
-                node = node.getLeft();
-            } else
-                return node; //send node to "splitByNode" method
-        }
-    }
+            if(node == null)
+                break;
+            else if(node instanceof Leaf) {
+                Leaf l = (Leaf) node;
+                Leaf left, right;
+                if(parent.getLeft() == node){
+                    left = new Leaf(l.getData().substring(0, index));
+                    l.setData(l.getData().substring(index));
+                    lChild = left;
+                    lChildFirst = true;
+                }
+                else{
+                    right = new Leaf(l.getData().substring(index));
+                    l.setData(l.getData().substring(0, index));
+                    rChild = right;
+                }
+                break;
+            }
+            else {
+                int len = node.getLen();
+                if(index < len) {
+                    parent = node;
+                    node = node.getLeft();
+                }
+                else if(index > len){
+                    index -= len;
+                    parent = node;
+                    node = node.getRight();
+                }
+                else {
+                    parent = node;
+                    rChild = node.getRight();
+                    node.setRight(null);
+                    break;
+                }
+            }
+        }//end while
 
-    public Node splitByNode(Node node) {
-        Node rChild = node.getRight();
-        Node rParent = node;
-        Node lChild = null;
-        Node lParent;
-        Node root = rChild;
+        Node rParent = null, lParent = null;
+        if(lChildFirst)
+            lParent = parent;
+        else
+            rParent = parent;
+        Node root = (lChildFirst) ? lChild : rChild;
+
         while (true) {
-            lParent = nearestLeft(this.root, rChild, null);
-            rParent.setRight(lChild);
-            if (lParent == null)
-                break;
-            root = lChild = lParent.getLeft();
+            if(lChildFirst){
+                lChildFirst = false;
+                rParent = nearestRight(this.root, lParent, null);
+                if(rParent == null)
+                    break;
+                root = rChild = rParent.getRight();
+                rParent.setRight(lChild);
 
-            rParent = nearestRight(this.root, lChild, null);
-            lParent.setLeft(rChild);
-            if (rParent == null)
-                break;
-            root = rChild = rParent.getRight();
+                lParent = nearestLeft(this.root, rParent, null);
+                if(lParent == null)
+                    break;
+                root = lChild = lParent.getLeft();
+                lParent.setLeft(rChild);
+            }
+            else {
+                lParent = nearestLeft(this.root, rParent, null);
+                if(lParent == null)
+                    break;
+                root = lChild = lParent.getLeft();
+                lParent.setLeft(rChild);
+
+                rParent = nearestRight(this.root, lParent, null);
+                if(rParent == null)
+                    break;
+                root = rChild = rParent.getRight();
+                rParent.setRight(lChild);
+            }
         }
         return root;
     }
@@ -175,7 +224,7 @@ public class Rope {
     public Node nearestRight(Node root, Node node, Node rParent) {
         if (root == null)
             return null;
-        if (root.getLeft() == node || root.getRight() == node)
+        if(root == node)
             return rParent;
         Node right = nearestRight(root.getRight(), node, root);
         if (right != null)
@@ -186,7 +235,7 @@ public class Rope {
     public Node nearestLeft(Node root, Node node, Node lParent) {
         if (root == null)
             return null;
-        if (root.getRight() == node || root.getLeft() == node)
+        if(root == node)
             return lParent;
         Node left = nearestLeft(root.getLeft(), node, root);
         if (left != null)
@@ -198,12 +247,42 @@ public class Rope {
         Rope lastRope = split(index);
         rope.concat(lastRope);
         this.concat(rope);
+        correctLengths();
     }
 
     public void delete(int i, int j) {
         Rope lastRope = split(i);
         lastRope = lastRope.split(j - 1);
         this.concat(lastRope);
+        correctLengths();
+    }
+
+    public void correctLengths(){
+        Node p = root;
+        if (p != null) {
+            Stack<Node> s = new Stack<>();
+            do {
+                while (p != null) {
+                    s.push(p);
+                    p = p.getLeft();
+                }
+                if (!s.isEmpty()) {
+                    p = s.pop();
+                    //code for correcting numbers
+                    if(!(p instanceof Leaf)) {
+                        int len = 0;
+                        if (p.getLeft() != null) {
+                            len += p.getLeft().getLen();
+                            if (p.getLeft().getRight() != null)
+                                len += p.getLeft().getRight().getLen();
+                        }
+                        p.setLen(len);
+                    }
+                    //end code for correcting numbers
+                    p = p.getRight();
+                }
+            } while (!s.isEmpty() || p != null);
+        }
     }
 
     public void traversePreOrder(StringBuilder sb, String padding, String pointer, Node node) {

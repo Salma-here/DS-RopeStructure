@@ -9,4 +9,9 @@ public class Leaf extends Node{
     public String getData() {
         return data;
     }
+
+    public void setData(String data) {
+        this.data = data;
+        this.setLen(data.length());
+    }
 }

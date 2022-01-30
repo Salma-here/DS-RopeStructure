@@ -58,7 +58,6 @@ public class Main {
                     int lastStr = Integer.parseInt(input.split(" ")[3]) - 1;
                     Rope rope = ropes.get(firstStr);
                     rope.insert(ropes.get(lastStr), index);
-                    ropes.add(firstStr, rope);
                 }
             } else if (input.startsWith("split")) {
                 if (input.split(" ").length == 3) {
@@ -75,7 +74,6 @@ public class Main {
                     int j = Integer.parseInt(input.split(" ")[3]);
                     Rope rope = ropes.get(stringNum);
                     rope.delete(i, j);
-                    ropes.add(stringNum, rope);
                 }
             } else if (input.startsWith("autocomplete")) {
                 if (input.split(" ").length == 2) {
@@ -122,7 +120,10 @@ public class Main {
                         }
                     }
                 }
-            } else if (input.equalsIgnoreCase("q")) {
+            }
+            else if (input.equalsIgnoreCase("clr"))
+                ropes.clear();
+            else if (input.startsWith("q")) {
                 break;
             } else
                 System.out.println("Invalid argument.");
