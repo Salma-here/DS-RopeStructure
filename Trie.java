@@ -31,7 +31,7 @@ public class Trie {
         for (int i = 0; i < prefix.length(); i++) {
             int index = prefix.charAt(i) - 'a';
             if (node.getChildren()[index] == null) {
-                System.out.println("Not found");
+                //System.out.println("Not found");
                 return null;
             } else
                 node = node.getChildren()[index];
@@ -60,15 +60,15 @@ public class Trie {
 
     public Item[] mostRepeated(String prefix) {//an Option for auto complete
         ArrayList<Item> list = autocomplete(prefix);
+        if(list == null)
+            return null;
         Item[] items = new Item[3];
-        if (list!=null) {
-            PriorityQueue queue = new PriorityQueue(list.size());
-            for (Item item : list)
-                queue.add(item);
-            for (int i = 0; i < Math.min(3,list.size()); i++) {
-                items[i] = queue.delete();
-                System.out.println((i + 1) + ". " + items[i].getData());
-            }
+        PriorityQueue queue = new PriorityQueue(list.size());
+        for (Item item : list)
+            queue.add(item);
+        for (int i = 0; i < Math.min(3,list.size()); i++) {
+            items[i] = queue.delete();
+            System.out.println((i + 1) + ". " + items[i].getData());
         }
         return items;
     }
@@ -83,11 +83,19 @@ public class Trie {
 
     public Item[] allWords(String prefix){//an Option for auto complete
         ArrayList<Item> list = autocomplete(prefix);
+        if(list == null)
+            return null;
         Item[] items = new Item[list.size()];
         for (int i = 0; i < items.length; i++) {
             items[i]= list.get(i);
             System.out.println((i + 1) + ". " + items[i].getData());
         }
         return items;
+    }
+
+    public boolean anyWords(String prefix){
+        if(autocomplete(prefix) == null)
+            return false;
+        return true;
     }
 }

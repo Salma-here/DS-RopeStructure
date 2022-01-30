@@ -1,4 +1,5 @@
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Stack;
 
 public class Rope {
@@ -85,6 +86,14 @@ public class Rope {
         return buffer.toString();
     }
 
+    public static Rope getRope(String str, ArrayList<Rope> ropes){
+        for(Rope rope: ropes){
+            if(rope.getString().equals(str))
+                return rope;
+        }
+        return null;
+    }
+
     public char index(int index) {
         return findIndex(root, index);
     }
@@ -104,6 +113,10 @@ public class Rope {
     }
 
     public void concat(Rope rope) {
+//        if(isEmpty())
+//            root = rope.root;
+//        if(rope.isEmpty())
+//            return;
         Node newRoot = new Node();
         newRoot.setLeft(root);
         newRoot.setRight(rope.root);
@@ -117,6 +130,8 @@ public class Rope {
     }
 
     public Rope split(int index) {
+        if(root == null)
+            return null;
         Rope otherRope;
         Node root = splitByIndex(index);
         if (root instanceof Leaf) {
@@ -244,6 +259,10 @@ public class Rope {
     }
 
     public void insert(Rope rope, int index) {
+        if(index > getString().length()){
+            System.out.println("index out of bounds.");
+            return;
+        }
         Rope lastRope = split(index);
         rope.concat(lastRope);
         this.concat(rope);
@@ -251,10 +270,14 @@ public class Rope {
     }
 
     public void delete(int i, int j) {
-        Rope lastRope = split(i);
-        lastRope = lastRope.split(j - 1);
-        this.concat(lastRope);
-        correctLengths();
+        if(i >= 0 && i < j - 1 && j < getString().length()) {
+            Rope lastRope = split(i);
+            lastRope = lastRope.split(j - 1);
+            this.concat(lastRope);
+            correctLengths();
+            return;
+        }
+        System.out.println("invalid argument.");
     }
 
     public void correctLengths(){

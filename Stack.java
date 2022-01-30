@@ -1,10 +1,10 @@
 public class Stack {
     private int top;
     private final int size=100;
-    private String items[];
+    private String[] items[];
 
     public Stack() {
-        items = new String[size];
+        items = new String[size][];
         top = -1;
     }
 
@@ -20,7 +20,7 @@ public class Stack {
         return false;
     }
 
-    public void push(String x) {
+    public void push(String[] x) {
         if (isFull())
             System.out.println("Stack is full!");
         else {
@@ -28,8 +28,8 @@ public class Stack {
         }
     }
 
-    public String pop() {
-        String x=null;
+    public String[] pop() {
+        String[] x=null;
         if (isEmpty())
             System.out.println("Stack is empty!");
         else
